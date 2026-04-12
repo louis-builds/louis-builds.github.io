@@ -72,13 +72,13 @@ export default class ProjectsSection
         this.list = [
             {
                 name: 'Westgate Moto',
+                description: 'A premium motorcycle repair and\ncustomization shop website.\n\n• Advanced Diagnostic Booking\n• Custom Modern UI Design\n• High performance template',
                 imageSources:
                 [
                     // 暂时保留原项目的贴图作为占位符，您后续可以在 static/models/projects/ 下放您自己的摩托车网站截图
                     './models/projects/chartogne/slideA.jpg',
                     './models/projects/chartogne/slideB.jpg',
                 ],
-                floorTexture: this.resources.items.projectsChartogneFloorTexture,
                 link:
                 {
                     href: 'https://westgate-moto.vercel.app/', // 摩托车维修网站链接

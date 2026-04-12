@@ -134,14 +134,14 @@ export default class InformationSection {
         this.activities = {}
         this.activities.x = this.x + 0
         this.activities.y = this.y - 10
-        this.activities.multiplier = 5.5
+        this.activities.multiplier = 8
 
         // Geometry
         this.activities.geometry = new THREE.PlaneGeometry(2 * this.activities.multiplier, 1 * this.activities.multiplier, 1, 1)
 
         // 使用 Canvas 动态绘制文字
         const canvas = document.createElement('canvas')
-        canvas.width = 2048
+        canvas.width = 3072
         canvas.height = 1024
         const context = canvas.getContext('2d')
 

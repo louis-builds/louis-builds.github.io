@@ -3,10 +3,8 @@ import * as THREE from 'three'
 import ProjectBoardMaterial from '../../Materials/ProjectBoard.js'
 import gsap from 'gsap'
 
-export default class Project
-{
-    constructor(_options)
-    {
+export default class Project {
+    constructor(_options) {
         // Options
         this.time = _options.time
         this.resources = _options.resources
@@ -23,6 +21,7 @@ export default class Project
         this.floorTexture = _options.floorTexture
         this.link = _options.link
         this.distinctions = _options.distinctions
+        this.description = _options.description
 
         // Set up
         this.container = new THREE.Object3D()
@@ -33,8 +32,7 @@ export default class Project
         this.setFloor()
     }
 
-    setBoards()
-    {
+    setBoards() {
         // Set up
         this.boards = {}
         this.boards.items = []
@@ -44,10 +42,8 @@ export default class Project
         this.boards.color = '#8e7161'
         this.boards.threeColor = new THREE.Color(this.boards.color)
 
-        if(this.debug)
-        {
-            this.debug.addColor(this.boards, 'color').name('boardColor').onChange(() =>
-            {
+        if (this.debug) {
+            this.debug.addColor(this.boards, 'color').name('boardColor').onChange(() => {
                 this.boards.threeColor.set(this.boards.color)
             })
         }
@@ -55,8 +51,7 @@ export default class Project
         // Create each board
         let i = 0
 
-        for(const _imageSource of this.imageSources)
-        {
+        for (const _imageSource of this.imageSources) {
             // Set up
             const board = {}
             board.x = this.x + this.boards.xStart + i * this.boards.xInter
@@ -75,8 +70,7 @@ export default class Project
 
             // Image load
             const image = new Image()
-            image.addEventListener('load', () =>
-            {
+            image.addEventListener('load', () => {
                 board.texture = new THREE.Texture(image)
                 // board.texture.magFilter = THREE.NearestFilter
                 // board.texture.minFilter = THREE.LinearFilter
@@ -109,8 +103,7 @@ export default class Project
         }
     }
 
-    setFloor()
-    {
+    setFloor() {
         this.floor = {}
 
         this.floor.x = 0
@@ -124,16 +117,49 @@ export default class Project
         this.floor.container.updateMatrix()
         this.container.add(this.floor.container)
 
-        // Texture
-        this.floor.texture = this.floorTexture
-        this.floor.texture.magFilter = THREE.NearestFilter
-        this.floor.texture.minFilter = THREE.LinearFilter
+        // Texture & Material
+        if (this.floorTexture) {
+            this.floor.texture = this.floorTexture
+            this.floor.texture.magFilter = THREE.NearestFilter
+            this.floor.texture.minFilter = THREE.LinearFilter
+            this.floor.material = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, alphaMap: this.floor.texture })
+        }
+        else {
+            const canvas = document.createElement('canvas')
+            canvas.width = 2048
+            canvas.height = 1024
+            const context = canvas.getContext('2d')
+            context.clearRect(0, 0, canvas.width, canvas.height)
+
+            // Draw project name
+            context.fillStyle = '#ffffff'
+            context.font = 'bolder 140px Arial'
+            context.textAlign = 'left'
+            context.textBaseline = 'top'
+            // 这里的第二个数字 100 就是调整大标题上下的位置（越小越靠上）
+            context.fillText(this.name, 100, -20)
+
+            // Draw description
+            if (this.description) {
+                context.fillStyle = '#aaaaaa'
+                context.font = 'normal 70px Arial'
+                const lines = this.description.split('\n')
+                lines.forEach((line, i) => {
+                    // 这里的 320 + i * 90 控制副标题或描述上下位置的地方（越小越往上拉）
+                    context.fillText(line, 100, 220 + i * 90)
+                })
+            }
+
+            this.floor.texture = new THREE.CanvasTexture(canvas)
+            this.floor.texture.magFilter = THREE.NearestFilter
+            this.floor.texture.minFilter = THREE.LinearFilter
+
+            // Use map instead of alphaMap for true colors
+            this.floor.material = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: this.floor.texture })
+        }
 
         // Geometry
         this.floor.geometry = this.geometries.floor
-
-        // Material
-        this.floor.material =  new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, alphaMap: this.floor.texture })
 
         // Mesh
         this.floor.mesh = new THREE.Mesh(this.floor.geometry, this.floor.material)
@@ -141,17 +167,14 @@ export default class Project
         this.floor.container.add(this.floor.mesh)
 
         // Distinctions
-        if(this.distinctions)
-        {
-            for(const _distinction of this.distinctions)
-            {
+        if (this.distinctions) {
+            for (const _distinction of this.distinctions) {
                 let base = null
                 let collision = null
                 let shadowSizeX = null
                 let shadowSizeY = null
 
-                switch(_distinction.type)
-                {
+                switch (_distinction.type) {
                     case 'awwwards':
                         base = this.resources.items.projectsDistinctionsAwwwardsBase.scene
                         collision = this.resources.items.projectsDistinctionsAwwwardsCollision.scene
@@ -192,8 +215,7 @@ export default class Project
             position: new THREE.Vector2(this.x + this.link.x, this.y + this.floor.y + this.link.y),
             halfExtents: new THREE.Vector2(this.link.halfExtents.x, this.link.halfExtents.y)
         })
-        this.floor.area.on('interact', () =>
-        {
+        this.floor.area.on('interact', () => {
             window.open(this.link.href, '_blank')
         })
 
