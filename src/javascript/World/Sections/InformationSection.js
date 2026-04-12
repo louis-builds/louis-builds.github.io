@@ -1,9 +1,7 @@
 import * as THREE from 'three'
 
-export default class InformationSection
-{
-    constructor(_options)
-    {
+export default class InformationSection {
+    constructor(_options) {
         // Options
         this.time = _options.time
         this.resources = _options.resources
@@ -25,8 +23,26 @@ export default class InformationSection
         this.setTiles()
     }
 
-    setStatic()
-    {
+    setStatic() {
+        // 隐藏 x < 3 的所有子网格（这恰好去掉了铁塔、国旗，以及最左边的那个 Twitter 雕塑）
+        const toRemoveVisual = []
+        this.resources.items.informationStaticBase.scene.traverse((child) => {
+            if (child.isMesh && child.position.x < 3) {
+                toRemoveVisual.push(child)
+            }
+        })
+        toRemoveVisual.forEach(child => child.parent.remove(child))
+
+        const toRemoveCollision = []
+        if (this.resources.items.informationStaticCollision) {
+            this.resources.items.informationStaticCollision.scene.traverse((child) => {
+                if (child.isMesh && child.position.x < 3) {
+                    toRemoveCollision.push(child)
+                }
+            })
+            toRemoveCollision.forEach(child => child.parent.remove(child))
+        }
+
         this.objects.add({
             base: this.resources.items.informationStaticBase.scene,
             collision: this.resources.items.informationStaticCollision.scene,
@@ -36,42 +52,14 @@ export default class InformationSection
         })
     }
 
-    setBaguettes()
-    {
-        this.baguettes = {}
-
-        this.baguettes.x = - 4
-        this.baguettes.y = 6
-
-        this.baguettes.a = this.objects.add({
-            base: this.resources.items.informationBaguetteBase.scene,
-            collision: this.resources.items.informationBaguetteCollision.scene,
-            offset: new THREE.Vector3(this.x + this.baguettes.x - 0.56, this.y + this.baguettes.y - 0.666, 0.2),
-            rotation: new THREE.Euler(0, 0, - Math.PI * 37 / 180),
-            duplicated: true,
-            shadow: { sizeX: 0.6, sizeY: 3.5, offsetZ: - 0.15, alpha: 0.35 },
-            mass: 1.5,
-            // soundName: 'woodHit'
-        })
-
-        this.baguettes.b = this.objects.add({
-            base: this.resources.items.informationBaguetteBase.scene,
-            collision: this.resources.items.informationBaguetteCollision.scene,
-            offset: new THREE.Vector3(this.x + this.baguettes.x - 0.8, this.y + this.baguettes.y - 2, 0.5),
-            rotation: new THREE.Euler(0, - 0.5, Math.PI * 60 / 180),
-            duplicated: true,
-            shadow: { sizeX: 0.6, sizeY: 3.5, offsetZ: - 0.15, alpha: 0.35 },
-            mass: 1.5,
-            sleep: false,
-            // soundName: 'woodHit'
-        })
+    setBaguettes() {
+        // (已清空，移除长面包模型)
     }
 
-    setLinks()
-    {
+    setLinks() {
         // Set up
         this.links = {}
-        this.links.x = 1.95
+        this.links.x = 4.35 // 从 github 的雕塑位置开始，对应原项目 x: 4.35
         this.links.y = - 1.5
         this.links.halfExtents = {}
         this.links.halfExtents.x = 1
@@ -88,28 +76,24 @@ export default class InformationSection
 
         // Options
         this.links.options = [
+
             {
-                href: 'https://twitter.com/bruno_simon/',
-                labelTexture: this.resources.items.informationContactTwitterLabelTexture
-            },
-            {
-                href: 'https://github.com/brunosimon/',
+                href: 'https://github.com/louis-builds',
                 labelTexture: this.resources.items.informationContactGithubLabelTexture
             },
             {
-                href: 'https://www.linkedin.com/in/simonbruno77/',
+                href: 'https://www.linkedin.com/in/louis-she-60718b360/',
                 labelTexture: this.resources.items.informationContactLinkedinLabelTexture
             },
             {
-                href: 'mailto:simon.bruno.77@gmail.com',
+                href: 'mailto:l224706043@gmail.com',
                 labelTexture: this.resources.items.informationContactMailLabelTexture
             }
         ]
 
         // Create each link
         let i = 0
-        for(const _option of this.links.options)
-        {
+        for (const _option of this.links.options) {
             // Set up
             const item = {}
             item.x = this.x + this.links.x + this.links.distanceBetween * i
@@ -121,8 +105,7 @@ export default class InformationSection
                 position: new THREE.Vector2(item.x, item.y),
                 halfExtents: new THREE.Vector2(this.links.halfExtents.x, this.links.halfExtents.y)
             })
-            item.area.on('interact', () =>
-            {
+            item.area.on('interact', () => {
                 window.open(_option.href, '_blank')
             })
 
@@ -146,8 +129,7 @@ export default class InformationSection
         }
     }
 
-    setActivities()
-    {
+    setActivities() {
         // Set up
         this.activities = {}
         this.activities.x = this.x + 0
@@ -157,13 +139,64 @@ export default class InformationSection
         // Geometry
         this.activities.geometry = new THREE.PlaneGeometry(2 * this.activities.multiplier, 1 * this.activities.multiplier, 1, 1)
 
-        // Texture
-        this.activities.texture = this.resources.items.informationActivitiesTexture
-        this.activities.texture.magFilter = THREE.NearestFilter
-        this.activities.texture.minFilter = THREE.LinearFilter
+        // 使用 Canvas 动态绘制文字
+        const canvas = document.createElement('canvas')
+        canvas.width = 2048
+        canvas.height = 1024
+        const context = canvas.getContext('2d')
 
-        // Material
-        this.activities.material = new THREE.MeshBasicMaterial({ wireframe: false, color: 0xffffff, alphaMap: this.activities.texture, transparent: true })
+        // 保持透明背景，像原图一样贴在地上
+        context.clearRect(0, 0, canvas.width, canvas.height)
+
+        // 绘制文字的帮助函数
+        const drawText = (text, x, y, size, color, isBold = false) => {
+            context.fillStyle = color
+            context.font = `${isBold ? 'bolder' : 'normal'} ${size}px Arial`
+            context.textAlign = 'left'
+            context.textBaseline = 'top'
+            context.fillText(text, x, y)
+        }
+
+        let currentY = 50
+        const startX = 100
+
+        // 大标题
+        drawText('EXPERIENCE & ACTIVITIES', startX, currentY, 120, '#ff8908', true)
+        currentY += 120
+
+        // 经历数据
+        const exps = [
+            { date: '2026-Present', title: 'Univ. of Auckland | Teaching Assistant', bullets: ['Tutor for Math & Programming, debugging complex code for students.'] },
+            { date: '2023-2024', title: 'SuYing Vision | Software Engineer', bullets: ['Delivered 200 AI smart cameras for Samsung iPhone 15 inspection line.', 'Led Linux-based control framework and Qt host interface development.'] },
+            { date: '2021-2023', title: 'Honor (HUAWEI) | Software Engineer', bullets: ['Improved image processing by 400ms via logical algorithm optimization.', 'Resolved critical pseudo-singleton display bugs in system UI.'] },
+            { date: '2019-2021', title: 'Casco (Alstom JV) | Software Engineer', bullets: ['Developed MFC-based control SW for Bangladesh national railway project.'] }
+        ]
+
+        exps.forEach(exp => {
+            // 时间和职位标题
+            drawText(`[${exp.date}] ${exp.title}`, startX, currentY, 85, '#ffffff', true)
+            currentY += 60
+            // 细节
+            // exp.bullets.forEach(b => {
+            //     drawText(`• ${b}`, startX + 40, currentY, 75, '#000000ff')
+            //     currentY += 45
+            // })
+            currentY += 20 // 每段经历留间隔
+        })
+
+        const texture = new THREE.CanvasTexture(canvas)
+        texture.magFilter = THREE.NearestFilter
+        texture.minFilter = THREE.LinearFilter
+
+        this.activities.texture = texture
+
+        // Material (改为 map 渲染真实颜色)
+        this.activities.material = new THREE.MeshBasicMaterial({
+            wireframe: false,
+            map: this.activities.texture,
+            transparent: true,
+            depthWrite: false
+        })
 
         // Mesh
         this.activities.mesh = new THREE.Mesh(this.activities.geometry, this.activities.material)
@@ -174,8 +207,7 @@ export default class InformationSection
         this.container.add(this.activities.mesh)
     }
 
-    setTiles()
-    {
+    setTiles() {
         this.tiles.add({
             start: new THREE.Vector2(this.x - 1.2, this.y + 13),
             delta: new THREE.Vector2(0, - 20)

@@ -1,9 +1,7 @@
 import * as THREE from 'three'
 
-export default class IntroSection
-{
-    constructor(_options)
-    {
+export default class IntroSection {
+    constructor(_options) {
         // Options
         this.config = _options.config
         this.time = _options.time
@@ -29,8 +27,7 @@ export default class IntroSection
         this.setDikes()
     }
 
-    setStatic()
-    {
+    setStatic() {
         this.objects.add({
             base: this.resources.items.introStaticBase.scene,
             collision: this.resources.items.introStaticCollision.scene,
@@ -40,8 +37,7 @@ export default class IntroSection
         })
     }
 
-    setInstructions()
-    {
+    setInstructions() {
         this.instructions = {}
 
         /**
@@ -63,8 +59,7 @@ export default class IntroSection
         this.instructions.arrows.label.mesh = new THREE.Mesh(this.instructions.arrows.label.geometry, this.instructions.arrows.label.material)
         this.container.add(this.instructions.arrows.label.mesh)
 
-        if(!this.config.touch)
-        {
+        if (!this.config.touch) {
             // Keys
             this.instructions.arrows.up = this.objects.add({
                 base: this.resources.items.introArrowKeyBase.scene,
@@ -109,10 +104,8 @@ export default class IntroSection
         }
     }
 
-    setOtherInstructions()
-    {
-        if(this.config.touch)
-        {
+    setOtherInstructions() {
+        if (this.config.touch) {
             return
         }
 
@@ -157,103 +150,59 @@ export default class IntroSection
         })
     }
 
-    setTitles()
-    {
-        // Title
-        this.objects.add({
-            base: this.resources.items.introBBase.scene,
-            collision: this.resources.items.introBCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
+    setTitles() {
+        // 动态生成包含 "Louis Se" 的伪 3D 大字标题贴图
+        const canvas = document.createElement('canvas')
+        canvas.width = 1024
+        canvas.height = 256
+        const context = canvas.getContext('2d')
+
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        context.font = 'bolder 140px Arial'
+        context.textAlign = 'center'
+        context.textBaseline = 'middle'
+
+        // 画出底部厚度（阴影和 3D 挤压效果）
+        context.fillStyle = '#b35d00' // 深色边缘
+        for (let i = 1; i <= 10; i++) {
+            context.fillText('Louis Se', canvas.width / 2 - i, canvas.height / 2 + i)
+        }
+
+        // 画出文字正面
+        context.fillStyle = '#ff8908' // 亮橙色正面
+        context.fillText('Louis Se', canvas.width / 2 - 10, canvas.height / 2 + 10)
+
+        // 给正面加上白边，让它更醒目
+        context.lineWidth = 4
+        context.strokeStyle = '#ffffff'
+        context.strokeText('Louis Se', canvas.width / 2 - 10, canvas.height / 2 + 10)
+
+        const texture = new THREE.CanvasTexture(canvas)
+        texture.magFilter = THREE.NearestFilter
+        texture.minFilter = THREE.LinearFilter
+
+        const material = new THREE.MeshBasicMaterial({
+            transparent: true,
+            map: texture,       // 改为使用真实颜色贴图
+            depthWrite: false
         })
-        this.objects.add({
-            base: this.resources.items.introRBase.scene,
-            collision: this.resources.items.introRCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
+        const geometry = new THREE.PlaneGeometry(16, 4, 1, 1)
+        const mesh = new THREE.Mesh(geometry, material)
+
+        // 倾斜使其立起来面向相机
+        mesh.rotation.x = Math.PI * 0.25
+        mesh.rotation.z = -0.1
+
+        // 👉 在这里调整文字的位置 (X, Y, Z高度) 👈
+        mesh.position.set(-3, -10, 2)
+
+        this.container.add(mesh)
+
+        // 让文字带有炫酷的上下浮动动画
+        this.time.on('tick', () => {
+            mesh.position.z = 2 + Math.sin(this.time.elapsed * 0.002) * 0.2
         })
-        this.objects.add({
-            base: this.resources.items.introUBase.scene,
-            collision: this.resources.items.introUCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introNBase.scene,
-            collision: this.resources.items.introNCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            duplicated: true,
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introOBase.scene,
-            collision: this.resources.items.introOCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            duplicated: true,
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introSBase.scene,
-            collision: this.resources.items.introSCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introIBase.scene,
-            collision: this.resources.items.introICollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introMBase.scene,
-            collision: this.resources.items.introMCollision.scene,
-            offset: new THREE.Vector3(0, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introOBase.scene,
-            collision: this.resources.items.introOCollision.scene,
-            offset: new THREE.Vector3(3.95, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            duplicated: true,
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
-        this.objects.add({
-            base: this.resources.items.introNBase.scene,
-            collision: this.resources.items.introNCollision.scene,
-            offset: new THREE.Vector3(5.85, 0, 0),
-            rotation: new THREE.Euler(0, 0, 0),
-            duplicated: true,
-            shadow: { sizeX: 1.5, sizeY: 1.5, offsetZ: - 0.6, alpha: 0.4 },
-            mass: 1.5,
-            soundName: 'brick'
-        })
+
         this.objects.add({
             base: this.resources.items.introCreativeBase.scene,
             collision: this.resources.items.introCreativeCollision.scene,
@@ -275,16 +224,14 @@ export default class IntroSection
         })
     }
 
-    setTiles()
-    {
+    setTiles() {
         this.tiles.add({
             start: new THREE.Vector2(0, - 4.5),
             delta: new THREE.Vector2(0, - 4.5)
         })
     }
 
-    setDikes()
-    {
+    setDikes() {
         this.dikes = {}
         this.dikes.brickOptions = {
             base: this.resources.items.brickBase.scene,
@@ -421,8 +368,7 @@ export default class IntroSection
             }
         })
 
-        if(!this.config.touch)
-        {
+        if (!this.config.touch) {
             this.walls.add({
                 object:
                 {
