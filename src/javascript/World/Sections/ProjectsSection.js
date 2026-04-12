@@ -71,18 +71,17 @@ export default class ProjectsSection
     {
         this.list = [
             {
-                name: 'My Project 1',
+                name: 'Westgate Moto',
                 imageSources:
                 [
-                    // 这里你只需要将你的项目截图替换为实际的图片路径即可（建议使用 jpg 或 webp）
+                    // 暂时保留原项目的贴图作为占位符，您后续可以在 static/models/projects/ 下放您自己的摩托车网站截图
                     './models/projects/chartogne/slideA.jpg',
                     './models/projects/chartogne/slideB.jpg',
                 ],
-                // 这里的地板材质可以先复用原有的，或者准备自己的 png/webp 图片
                 floorTexture: this.resources.items.projectsChartogneFloorTexture,
                 link:
                 {
-                    href: 'https://github.com/louis-se', // 换成你的项目链接
+                    href: 'https://westgate-moto.vercel.app/', // 摩托车维修网站链接
                     x: - 4.8,
                     y: - 3.3,
                     halfExtents: { x: 3.2, y: 1.5 }
