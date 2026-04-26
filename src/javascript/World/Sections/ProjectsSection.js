@@ -2,10 +2,8 @@ import * as THREE from 'three'
 import Project from './Project'
 import gsap from 'gsap'
 
-export default class ProjectsSection
-{
-    constructor(_options)
-    {
+export default class ProjectsSection {
+    constructor(_options) {
         // Options
         this.time = _options.time
         this.resources = _options.resources
@@ -20,8 +18,7 @@ export default class ProjectsSection
         this.y = _options.y
 
         // Debug
-        if(this.debug)
-        {
+        if (this.debug) {
             this.debugFolder = this.debug.addFolder('projects')
             this.debugFolder.open()
         }
@@ -43,20 +40,17 @@ export default class ProjectsSection
         this.setZone()
 
         // Add all project from the list
-        for(const _options of this.list)
-        {
+        for (const _options of this.list) {
             this.add(_options)
         }
     }
 
-    setGeometries()
-    {
+    setGeometries() {
         this.geometries = {}
         this.geometries.floor = new THREE.PlaneGeometry(16, 8)
     }
 
-    setMeshes()
-    {
+    setMeshes() {
         this.meshes = {}
 
         // this.meshes.boardStructure = this.objects.getConvertedMesh(this.resources.items.projectsBoardStructure.scene.children, { floorShadowTexture: this.resources.items.projectsBoardStructureFloorShadowTexture })
@@ -67,32 +61,48 @@ export default class ProjectsSection
         this.meshes.areaLabel.matrixAutoUpdate = false
     }
 
-    setList()
-    {
+    setList() {
         this.list = [
             {
                 name: 'Westgate Moto',
                 description: 'A premium motorcycle repair and\ncustomization shop website.\n\n• Advanced Diagnostic Booking\n• Custom Modern UI Design\n• High performance template',
                 imageSources:
-                [
-                    // 暂时保留原项目的贴图作为占位符，您后续可以在 static/models/projects/ 下放您自己的摩托车网站截图
-                    './models/projects/chartogne/slideA.jpg',
-                    './models/projects/chartogne/slideB.jpg',
-                ],
+                    [
+                        // 暂时保留原项目的贴图作为占位符，您后续可以在 static/models/projects/ 下放您自己的摩托车网站截图
+                        './models/projects/chartogne/slideA.jpg',
+                        './models/projects/chartogne/slideB.jpg',
+                    ],
                 link:
                 {
                     href: 'https://westgate-moto.vercel.app/', // 摩托车维修网站链接
-                    x: - 4.8,
+                    x: - 2,
                     y: - 3.3,
-                    halfExtents: { x: 3.2, y: 1.5 }
+                    halfExtents: { x: 6.2, y: 1.5 }
+                },
+                distinctions: []
+            },
+            {
+                name: 'AI Image Generator',
+                description: 'An AI-powered image generation\napplication.\n\n• Flutter Android app seamlessly deployed to the web\n• Transforms text prompts into unique AI images\n• Sleek mobile interface with local save support',
+                imageSources:
+                    [
+                        // 预留的截图占位符，后续可以替换为您自己的AI项目截图
+                        './models/projects/chartogne/dog.png',
+                        './models/projects/chartogne/galley.png',
+                    ],
+                link:
+                {
+                    href: 'https://ai-generate-image-kappa.vercel.app/',
+                    x: -2,
+                    y: - 3.3,
+                    halfExtents: { x: 6.2, y: 1.5 }
                 },
                 distinctions: []
             }
         ]
     }
 
-    setZone()
-    {
+    setZone() {
         const totalWidth = this.list.length * (this.interDistance / 2)
 
         const zone = this.zones.add({
@@ -101,27 +111,23 @@ export default class ProjectsSection
             data: { cameraAngle: 'projects' }
         })
 
-        zone.on('in', (_data) =>
-        {
+        zone.on('in', (_data) => {
             this.camera.angle.set(_data.cameraAngle)
             gsap.to(this.passes.horizontalBlurPass.material.uniforms.uStrength.value, { x: 0, duration: 2 })
             gsap.to(this.passes.verticalBlurPass.material.uniforms.uStrength.value, { y: 0, duration: 2 })
         })
 
-        zone.on('out', () =>
-        {
+        zone.on('out', () => {
             this.camera.angle.set('default')
             gsap.to(this.passes.horizontalBlurPass.material.uniforms.uStrength.value, { x: this.passes.horizontalBlurPass.strength, duration: 2 })
             gsap.to(this.passes.verticalBlurPass.material.uniforms.uStrength.value, { y: this.passes.verticalBlurPass.strength, duration: 2 })
         })
     }
 
-    add(_options)
-    {
+    add(_options) {
         const x = this.x + this.items.length * this.interDistance
         let y = this.y
-        if(this.items.length > 0)
-        {
+        if (this.items.length > 0) {
             y += (Math.random() - 0.5) * this.positionRandomess
         }
 
@@ -142,8 +148,7 @@ export default class ProjectsSection
         this.container.add(project.container)
 
         // Add tiles
-        if(this.items.length >= 1)
-        {
+        if (this.items.length >= 1) {
             const previousProject = this.items[this.items.length - 1]
             const start = new THREE.Vector2(previousProject.x + this.projectHalfWidth, previousProject.y)
             const end = new THREE.Vector2(project.x - this.projectHalfWidth, project.y)
