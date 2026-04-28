@@ -136,8 +136,8 @@ export default class Project {
             context.font = 'bolder 140px Arial'
             context.textAlign = 'left'
             context.textBaseline = 'top'
-            // 这里的第二个数字 100 就是调整大标题上下的位置（越小越靠上）
-            context.fillText(this.name, 100, -20)
+            // 这里的第二个数字 50 就是调整大标题上下的位置（越小越靠上）
+            context.fillText(this.name, 100, 50)
 
             // Draw description
             if (this.description) {
