@@ -71,17 +71,50 @@ export default class ProjectsSection
     {
         this.list = [
             {
+                name: 'IELTS Writing Practice',
+                description: 'Practice platform for IELTS writing tasks with\nAI-powered feedback.\n\n• Real-time word counter\n• AI outline evaluation\n• Timer and feedback system',
+                imageSources:
+                [
+                    './models/projects/priorHoldings/slideA.jpg',
+                    './models/projects/priorHoldings/slideB.jpg',
+                ],
+                link:
+                {
+                    href: 'https://ielts-writing-practice-psi.vercel.app/',
+                    x: - 4.8,
+                    y: - 3.3,
+                    halfExtents: { x: 3.2, y: 1.5 }
+                },
+                distinctions: []
+            },
+            {
+                name: 'AI Image Generator',
+                description: 'Text-to-image generator using Flutter and\nStable Diffusion.\n\n• Cross-platform mobile app\n• Real-time generation\n• Premium UI/UX design',
+                imageSources:
+                [
+                    './models/projects/orano/slideA.jpg',
+                    './models/projects/orano/slideB.jpg',
+                ],
+                link:
+                {
+                    href: 'https://ai-generate-image-kappa.vercel.app/',
+                    x: - 4.8,
+                    y: - 3.3,
+                    halfExtents: { x: 3.2, y: 1.5 }
+                },
+                distinctions: []
+            },
+            {
                 name: 'Westgate Moto',
                 description: 'A premium motorcycle repair and\ncustomization shop website.\n\n• Advanced Diagnostic Booking\n• Custom Modern UI Design\n• High performance template',
                 imageSources:
                 [
-                    // 暂时保留原项目的贴图作为占位符，您后续可以在 static/models/projects/ 下放您自己的摩托车网站截图
                     './models/projects/chartogne/slideA.jpg',
                     './models/projects/chartogne/slideB.jpg',
                 ],
                 link:
                 {
-                    href: 'https://westgate-moto.vercel.app/', // 摩托车维修网站链接
+                    href: 'https://westgate-moto.vercel.app/',
                     x: - 4.8,
                     y: - 3.3,
                     halfExtents: { x: 3.2, y: 1.5 }
