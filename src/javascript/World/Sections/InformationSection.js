@@ -19,7 +19,7 @@ export default class InformationSection {
         this.setStatic()
         this.setBaguettes()
         this.setLinks()
-        this.setActivities()
+        this.setKeywords()
         this.setTiles()
     }
 
@@ -129,82 +129,103 @@ export default class InformationSection {
         }
     }
 
-    setActivities() {
-        // Set up
-        this.activities = {}
-        this.activities.x = this.x + 0
-        this.activities.y = this.y - 10
-        this.activities.multiplier = 8
+    setKeywords() {
+        // Set up —— 用不同高度悬浮的关键字取代原来的 EXPERIENCE & ACTIVITIES 文字板
+        this.keywords = {}
+        this.keywords.container = new THREE.Object3D()
+        this.keywords.container.matrixAutoUpdate = false
+        this.keywords.container.updateMatrix()
+        this.container.add(this.keywords.container)
 
-        // Geometry
-        this.activities.geometry = new THREE.PlaneGeometry(2 * this.activities.multiplier, 1 * this.activities.multiplier, 1, 1)
-
-        // 使用 Canvas 动态绘制文字
-        const canvas = document.createElement('canvas')
-        canvas.width = 3072
-        canvas.height = 1024
-        const context = canvas.getContext('2d')
-
-        // 保持透明背景，像原图一样贴在地上
-        context.clearRect(0, 0, canvas.width, canvas.height)
-
-        // 绘制文字的帮助函数
-        const drawText = (text, x, y, size, color, isBold = false) => {
-            context.fillStyle = color
-            context.font = `${isBold ? 'bolder' : 'normal'} ${size}px Arial`
-            context.textAlign = 'left'
-            context.textBaseline = 'top'
-            context.fillText(text, x, y)
-        }
-
-        let currentY = 50
-        const startX = 100
-
-        // 大标题
-        drawText('EXPERIENCE & ACTIVITIES', startX, currentY, 120, '#ff8908', true)
-        currentY += 120
-
-        // 经历数据
-        const exps = [
-            { date: '2026-Present', title: 'Univ. of Auckland | Teaching Assistant', bullets: ['Tutor for Math & Programming, debugging complex code for students.'] },
-            { date: '2023-2024', title: 'SuYing Vision | Software Engineer', bullets: ['Delivered 200 AI smart cameras for Samsung iPhone 15 inspection line.', 'Led Linux-based control framework and Qt host interface development.'] },
-            { date: '2021-2023', title: 'Honor (HUAWEI) | Software Engineer', bullets: ['Improved image processing by 400ms via logical algorithm optimization.', 'Resolved critical pseudo-singleton display bugs in system UI.'] },
-            { date: '2019-2021', title: 'Casco (Alstom JV) | Software Engineer', bullets: ['Developed MFC-based control SW for Bangladesh national railway project.'] }
+        // 关键字：文字 / 主色 / 相对位置(x,y) / 悬浮基准高度 z / 浮动幅度 / 速度 / 字号
+        const definitions = [
+            { text: 'C++', color: '#38bdf8', x: - 9.0, y: 4.5,  z: 3.6, amp: 0.55, speed: 0.0016, size: 180 },
+            { text: 'Python',      color: '#f59e0b', x: - 6.4, y: 11.0, z: 2.2, amp: 0.45, speed: 0.0021, size: 215 },
+            { text: 'Embedded', color: '#a78bfa', x: - 3.8, y: 5.5,  z: 4.2, amp: 0.60, speed: 0.0014, size: 165 },
+            { text: 'Linux',    color: '#34d399', x: - 1.2, y: 12.0, z: 1.8, amp: 0.42, speed: 0.0019, size: 200 },
+            { text: 'AI Agent',      color: '#f87171', x:   1.4, y: 4.0,  z: 3.2, amp: 0.50, speed: 0.0017, size: 220 },
+            { text: 'C#',       color: '#f472b6', x:   4.0, y: 11.5, z: 2.6, amp: 0.48, speed: 0.0022, size: 220 },
+            { text: 'AWS',   color: '#facc15', x:   6.6, y: 5.0,  z: 4.0, amp: 0.58, speed: 0.0015, size: 190 },
+            { text: 'MCP',       color: '#7b2dd4', x:   9.2, y: 12.5, z: 2.0, amp: 0.40, speed: 0.0024, size: 215 }
         ]
 
-        exps.forEach(exp => {
-            // 时间和职位标题
-            drawText(`[${exp.date}] ${exp.title}`, startX, currentY, 85, '#ffffff', true)
-            currentY += 60
-            // 细节
-            // exp.bullets.forEach(b => {
-            //     drawText(`• ${b}`, startX + 40, currentY, 75, '#000000ff')
-            //     currentY += 45
-            // })
-            currentY += 20 // 每段经历留间隔
+        this.keywords.items = []
+
+        for (const _def of definitions) {
+            // 每个关键字单独画一张透明底的霓虹文字贴图
+            const canvas = document.createElement('canvas')
+            canvas.width = 1024
+            canvas.height = 384
+            const ctx = canvas.getContext('2d')
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.font = `900 ${_def.size}px "Arial Black", Arial, sans-serif`
+
+            const cx = canvas.width / 2
+            const cy = canvas.height / 2
+
+            // 3D 挤压厚度
+            for (let i = 14; i >= 1; i--) {
+                ctx.fillStyle = 'rgba(8, 18, 32, 0.5)'
+                ctx.fillText(_def.text, cx - i * 0.6, cy + i)
+            }
+
+            // 霓虹发光正面
+            ctx.save()
+            ctx.shadowColor = _def.color
+            ctx.shadowBlur = 45
+            ctx.fillStyle = _def.color
+            ctx.fillText(_def.text, cx, cy)
+            ctx.restore()
+
+            // 白色描边
+            ctx.lineWidth = 4
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'
+            ctx.strokeText(_def.text, cx, cy)
+
+            const texture = new THREE.CanvasTexture(canvas)
+            texture.magFilter = THREE.LinearFilter
+            texture.minFilter = THREE.LinearFilter
+            texture.anisotropy = 4
+
+            const material = new THREE.MeshBasicMaterial({
+                transparent: true,
+                map: texture,
+                depthWrite: false
+            })
+
+            // 平面按画布比例 (1024:384 ≈ 2.67:1)
+            const width = 4.4
+            const geometry = new THREE.PlaneGeometry(width, width * 0.375, 1, 1)
+            const mesh = new THREE.Mesh(geometry, material)
+
+            mesh.position.set(this.x + _def.x, this.y - 10 + _def.y, _def.z)
+            mesh.rotation.x = Math.PI * 0.25
+            mesh.rotation.z = (Math.random() - 0.5) * 0.14
+
+            this.keywords.container.add(mesh)
+
+            this.keywords.items.push({
+                mesh,
+                baseZ: _def.z,
+                baseRotX: mesh.rotation.x,
+                baseRotZ: mesh.rotation.z,
+                amp: _def.amp,
+                speed: _def.speed,
+                phase: Math.random() * Math.PI * 2
+            })
+        }
+
+        // 悬浮动画：各自不同的高度、相位与旋转摆动，营造漂浮的酷炫效果
+        this.time.on('tick', () => {
+            const e = this.time.elapsed
+            for (const _item of this.keywords.items) {
+                _item.mesh.position.z = _item.baseZ + Math.sin(e * _item.speed + _item.phase) * _item.amp
+                _item.mesh.rotation.z = _item.baseRotZ + Math.sin(e * _item.speed * 0.6 + _item.phase) * 0.05
+                _item.mesh.rotation.x = _item.baseRotX + Math.sin(e * _item.speed * 0.8 + _item.phase) * 0.03
+            }
         })
-
-        const texture = new THREE.CanvasTexture(canvas)
-        texture.magFilter = THREE.NearestFilter
-        texture.minFilter = THREE.LinearFilter
-
-        this.activities.texture = texture
-
-        // Material (改为 map 渲染真实颜色)
-        this.activities.material = new THREE.MeshBasicMaterial({
-            wireframe: false,
-            map: this.activities.texture,
-            transparent: true,
-            depthWrite: false
-        })
-
-        // Mesh
-        this.activities.mesh = new THREE.Mesh(this.activities.geometry, this.activities.material)
-        this.activities.mesh.position.x = this.activities.x
-        this.activities.mesh.position.y = this.activities.y
-        this.activities.mesh.matrixAutoUpdate = false
-        this.activities.mesh.updateMatrix()
-        this.container.add(this.activities.mesh)
     }
 
     setTiles() {

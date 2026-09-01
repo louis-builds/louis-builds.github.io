@@ -64,38 +64,53 @@ export default class ProjectsSection {
     setList() {
         this.list = [
             {
-                name: 'Westgate Moto',
-                description: 'A premium motorcycle repair and\ncustomization shop website.\n\n• Advanced Diagnostic Booking\n• Custom Modern UI Design\n• High performance template',
+                name: 'IELTS Quest',
+                description: 'Full-stack IELTS practice app on AWS.\n\n• AWS Amplify hosting & CI/CD\n• PostgreSQL relational backend\n• Cloud auth and data sync',
                 imageSources:
                     [
-                        // 暂时保留原项目的贴图作为占位符，您后续可以在 static/models/projects/ 下放您自己的摩托车网站截图
-                        './models/projects/chartogne/slideA.jpg',
-                        './models/projects/chartogne/slideB.jpg',
+                        './models/projects/AWSPostgres/slideA.jpg',
+                        './models/projects/AWSPostgres/slideB.jpg',
                     ],
                 link:
                 {
-                    href: 'https://westgate-moto.vercel.app/', // 摩托车维修网站链接
-                    x: - 2,
+                    href: 'https://aws-postgres.d34mvomi8cpjin.amplifyapp.com/',
+                    x: - 2.8,
                     y: - 3.3,
-                    halfExtents: { x: 6.2, y: 1.5 }
+                    halfExtents: { x: 5.2, y: 1.5 }
+                },
+                distinctions: []
+            },
+            {
+                name: 'Clear View Glass',
+                description: 'Live lead-generation platform for a\nNew Zealand glass business.\n\n• Already in use with local NZ customers\n• Built to drive traffic and win new clients\n• One-tap WhatsApp enquiry',
+                imageSources:
+                    [
+                        './models/projects/ClearViewGlass/slideA.jpg',
+                        './models/projects/ClearViewGlass/slideB.jpg',
+                    ],
+                link:
+                {
+                    href: 'https://clearviewglass.vercel.app/',
+                    x: - 2.8,
+                    y: - 3.3,
+                    halfExtents: { x: 5.2, y: 1.5 }
                 },
                 distinctions: []
             },
             {
                 name: 'AI Image Generator',
-                description: 'An AI-powered image generation\napplication.\n\n• Flutter Android app seamlessly deployed to the web\n• Transforms text prompts into unique AI images\n• Sleek mobile interface with local save support',
+                description: 'Text-to-image generator using Flutter.\n\n• Cross-platform mobile app\n• Real-time generation\n• Premium UI/UX design',
                 imageSources:
                     [
-                        // 预留的截图占位符，后续可以替换为您自己的AI项目截图
-                        './models/projects/chartogne/dog.png',
-                        './models/projects/chartogne/galley.png',
+                        './models/projects/AIImage/slideA.jpg',
+                        './models/projects/AIImage/slideB.jpg',
                     ],
                 link:
                 {
                     href: 'https://ai-generate-image-kappa.vercel.app/',
-                    x: -2,
+                    x: - 2.8,
                     y: - 3.3,
-                    halfExtents: { x: 6.2, y: 1.5 }
+                    halfExtents: { x: 5.2, y: 1.5 }
                 },
                 distinctions: []
             }
