@@ -64,6 +64,40 @@ export default class ProjectsSection {
     setList() {
         this.list = [
             {
+                name: 'IELTS Quest',
+                description: 'Full-stack IELTS practice app on AWS.\n\n• AWS Amplify hosting & CI/CD\n• PostgreSQL relational backend\n• Cloud auth and data sync',
+                imageSources:
+                    [
+                        './models/projects/AWSPostgres/slideA.jpg',
+                        './models/projects/AWSPostgres/slideB.jpg',
+                    ],
+                link:
+                {
+                    href: 'https://aws-postgres.d34mvomi8cpjin.amplifyapp.com/',
+                    x: - 2.8,
+                    y: - 3.3,
+                    halfExtents: { x: 5.2, y: 1.5 }
+                },
+                distinctions: []
+            },
+            {
+                name: 'Clear View Glass',
+                description: 'Live lead-generation platform for a\nNew Zealand glass business.\n\n• Already in use with local NZ customers\n• Built to drive traffic and win new clients\n• One-tap WhatsApp enquiry',
+                imageSources:
+                    [
+                        './models/projects/ClearViewGlass/slideA.jpg',
+                        './models/projects/ClearViewGlass/slideB.jpg',
+                    ],
+                link:
+                {
+                    href: 'https://clearviewglass.vercel.app/',
+                    x: - 2.8,
+                    y: - 3.3,
+                    halfExtents: { x: 5.2, y: 1.5 }
+                },
+                distinctions: []
+            },
+            {
                 name: 'AI Image Generator',
                 description: 'Text-to-image generator using Flutter.\n\n• Cross-platform mobile app\n• Real-time generation\n• Premium UI/UX design',
                 imageSources:
@@ -74,40 +108,6 @@ export default class ProjectsSection {
                 link:
                 {
                     href: 'https://ai-generate-image-kappa.vercel.app/',
-                    x: - 2.8,
-                    y: - 3.3,
-                    halfExtents: { x: 5.2, y: 1.5 }
-                },
-                distinctions: []
-            },
-            {
-                name: 'IELTS Writing Practice',
-                description: 'Practice platform for IELTS writing tasks with\nAI-powered feedback.\n\n• Focus on Task Response\n• AI outline evaluation\n• Timer and feedback system',
-                imageSources:
-                    [
-                        './models/projects/IELTS/slideA.jpg',
-                        './models/projects/IELTS/slideB.jpg',
-                    ],
-                link:
-                {
-                    href: 'https://ielts-writing-practice-psi.vercel.app/',
-                    x: - 2.8,
-                    y: - 3.3,
-                    halfExtents: { x: 5.2, y: 1.5 }
-                },
-                distinctions: []
-            },
-            {
-                name: 'Westgate Moto',
-                description: 'A premium motorcycle repair and\ncustomization shop website.\n\n• Advanced Diagnostic Booking\n• Custom Modern UI Design\n• High performance template',
-                imageSources:
-                    [
-                        './models/projects/chartogne/slideA.jpg',
-                        './models/projects/chartogne/slideB.jpg',
-                    ],
-                link:
-                {
-                    href: 'https://westgate-moto.vercel.app/',
                     x: - 2.8,
                     y: - 3.3,
                     halfExtents: { x: 5.2, y: 1.5 }

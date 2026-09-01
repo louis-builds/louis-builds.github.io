@@ -141,8 +141,8 @@ export default class Project {
 
             // Draw description
             if (this.description) {
-                context.fillStyle = '#aaaaaa'
-                context.font = 'normal 70px Arial'
+                context.fillStyle = '#9a3412' // 深橙色
+                context.font = 'bolder 70px Arial'
                 const lines = this.description.split('\n')
                 lines.forEach((line, i) => {
                     // 这里的 320 + i * 90 控制副标题或描述上下位置的地方（越小越往上拉）

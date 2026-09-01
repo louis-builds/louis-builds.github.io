@@ -151,42 +151,66 @@ export default class IntroSection {
     }
 
     setTitles() {
-        // 动态生成包含 "Louis Se" 的伪 3D 大字标题贴图
+        // 动态生成带渐变 + 霓虹光晕的伪 3D 大字自我介绍标题贴图
         const canvas = document.createElement('canvas')
-        canvas.width = 1024
-        canvas.height = 256
+        canvas.width = 2048
+        canvas.height = 640
         const context = canvas.getContext('2d')
 
-        context.clearRect(0, 0, canvas.width, canvas.height)
-        context.font = 'bolder 140px Arial'
-        context.textAlign = 'center'
-        context.textBaseline = 'middle'
+        const nameText = 'Louis Se'
 
-        // 画出底部厚度（阴影和 3D 挤压效果）
-        context.fillStyle = '#b35d00' // 深色边缘
-        for (let i = 1; i <= 10; i++) {
-            context.fillText('Louis Se', canvas.width / 2 - i, canvas.height / 2 + i)
+        const centerX = canvas.width / 2
+        const nameY = canvas.height * 0.5
+
+        const drawTitle = (elapsed = 0) => {
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            context.textAlign = 'center'
+            context.textBaseline = 'middle'
+
+            // ---- 主标题：放大到 300px，带 3D 挤压厚度 ----
+            context.font = '900 300px "Arial Black", Arial, sans-serif'
+
+            const depth = 22
+            for (let i = depth; i >= 1; i--) {
+                const t = i / depth
+                context.fillStyle = `rgb(${Math.round(6 + 10 * t)}, ${Math.round(38 + 34 * t)}, ${Math.round(68 + 46 * t)})`
+                context.fillText(nameText, centerX - i * 0.7, nameY + i)
+            }
+
+            // 正面竖向渐变
+            const grad = context.createLinearGradient(0, nameY - 170, 0, nameY + 170)
+            grad.addColorStop(0, '#e0f7ff')
+            grad.addColorStop(0.45, '#38bdf8')
+            grad.addColorStop(0.75, '#0ea5e9')
+            grad.addColorStop(1, '#6366f1')
+
+            // 呼吸式霓虹光晕
+            context.save()
+            context.shadowColor = 'rgba(56, 189, 248, 0.9)'
+            context.shadowBlur = 42 + Math.sin(elapsed * 0.003) * 22
+            context.fillStyle = grad
+            context.fillText(nameText, centerX, nameY)
+            context.restore()
+
+            // 白色描边让文字更醒目
+            context.lineWidth = 5
+            context.strokeStyle = 'rgba(255, 255, 255, 0.85)'
+            context.strokeText(nameText, centerX, nameY)
         }
 
-        // 画出文字正面
-        context.fillStyle = '#ff8908' // 亮橙色正面
-        context.fillText('Louis Se', canvas.width / 2 - 10, canvas.height / 2 + 10)
-
-        // 给正面加上白边，让它更醒目
-        context.lineWidth = 4
-        context.strokeStyle = '#ffffff'
-        context.strokeText('Louis Se', canvas.width / 2 - 10, canvas.height / 2 + 10)
+        drawTitle(0)
 
         const texture = new THREE.CanvasTexture(canvas)
-        texture.magFilter = THREE.NearestFilter
+        texture.magFilter = THREE.LinearFilter
         texture.minFilter = THREE.LinearFilter
+        texture.anisotropy = 4
 
         const material = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: texture,       // 改为使用真实颜色贴图
+            map: texture,
             depthWrite: false
         })
-        const geometry = new THREE.PlaneGeometry(16, 4, 1, 1)
+        const geometry = new THREE.PlaneGeometry(22, 6.9, 1, 1)
         const mesh = new THREE.Mesh(geometry, material)
 
         // 倾斜使其立起来面向相机
@@ -198,9 +222,20 @@ export default class IntroSection {
 
         this.container.add(mesh)
 
-        // 让文字带有炫酷的上下浮动动画
+        // 炫酷动画：上下浮动 + 轻微摇摆 + 光晕呼吸重绘
+        let lastRedraw = 0
         this.time.on('tick', () => {
-            mesh.position.z = 2 + Math.sin(this.time.elapsed * 0.002) * 0.2
+            const e = this.time.elapsed
+            mesh.position.z = 2 + Math.sin(e * 0.002) * 0.25
+            mesh.rotation.z = -0.1 + Math.sin(e * 0.0012) * 0.03
+            mesh.rotation.x = Math.PI * 0.25 + Math.sin(e * 0.0016) * 0.015
+
+            // 每 ~70ms 重绘贴图，制造呼吸霓虹效果
+            if (e - lastRedraw > 70) {
+                lastRedraw = e
+                drawTitle(e)
+                texture.needsUpdate = true
+            }
         })
 
         this.objects.add({
